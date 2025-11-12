@@ -12,7 +12,7 @@
 
 static const char *TAG = "STEPPER_RTOS";
 
-// Half-step sequence (8 steps)
+// Half-step 
 int sequence[8][4] = {
     {1, 0, 0, 0},
     {1, 1, 0, 0},
@@ -55,7 +55,7 @@ void release_motor() {
     gpio_set_level(IN4, 0);
 }
 
-// 🧠 Task 1: อ่านปุ่ม (Forward / Backward)
+//  Task 1: อ่านปุ่ม (Forward / Backward)
 void button_task(void *pvParameters) {
     while (1) {
         int fwd = gpio_get_level(BTN_FWD);
