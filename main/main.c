@@ -11,8 +11,7 @@
 #define BTN_BWD 5
 
 static const char *TAG = "STEPPER_RTOS";
-
-// Half-step 
+ 
 int sequence[8][4] = {
     {1, 0, 0, 0},
     {1, 1, 0, 0},
@@ -24,7 +23,7 @@ int sequence[8][4] = {
     {1, 0, 0, 1}
 };
 
-int current_dir = 0; // 1 = forward, -1 = backward, 0 = stop
+int current_dir = 0;
 
 void step_motor(int dir, int delay_us) {
     if (dir == 0) return;
@@ -55,7 +54,6 @@ void release_motor() {
     gpio_set_level(IN4, 0);
 }
 
-//  Task 1: อ่านปุ่ม (Forward / Backward)
 void button_task(void *pvParameters) {
     while (1) {
         int fwd = gpio_get_level(BTN_FWD);
@@ -69,14 +67,13 @@ void button_task(void *pvParameters) {
             current_dir = 0;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(50)); // อ่านปุ่มทุก 50ms
+        vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
 
-//  Task 2: ควบคุมมอเตอร์
 void motor_task(void *pvParameters) {
-    const int fast_speed_us = 1000;   // ความเร็วสำหรับ forward
-    const int slow_speed_us = 500;  // ความเร็วสำหรับ backward
+    const int fast_speed_us = 1000;  
+    const int slow_speed_us = 500;  
 
     while (1) {
         if (current_dir == 1) {
@@ -91,13 +88,11 @@ void motor_task(void *pvParameters) {
 }
 
 void app_main(void) {
-    // ตั้งค่าขา output สำหรับมอเตอร์
     gpio_set_direction(IN1, GPIO_MODE_OUTPUT);
     gpio_set_direction(IN2, GPIO_MODE_OUTPUT);
     gpio_set_direction(IN3, GPIO_MODE_OUTPUT);
     gpio_set_direction(IN4, GPIO_MODE_OUTPUT);
 
-    // ตั้งค่าปุ่ม input พร้อม pull-up
     gpio_set_direction(BTN_FWD, GPIO_MODE_INPUT);
     gpio_set_direction(BTN_BWD, GPIO_MODE_INPUT);
     gpio_pullup_en(BTN_FWD);
@@ -107,7 +102,6 @@ void app_main(void) {
 
     ESP_LOGI(TAG, "Stepper RTOS control started");
 
-    // สร้าง task แยก
     xTaskCreate(button_task, "button_task", 2048, NULL, 5, NULL);
     xTaskCreate(motor_task, "motor_task", 4096, NULL, 5, NULL);
 }
