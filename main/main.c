@@ -72,14 +72,14 @@ void button_task(void *pvParameters) {
 }
 
 void motor_task(void *pvParameters) {
-    const int fast_speed_us = 1000;  
-    const int slow_speed_us = 500;  
+    const int forward_speed = 1000;  
+    const int backward_speed = 500;  
 
     while (1) {
         if (current_dir == 1) {
-            step_motor(1, fast_speed_us);
+            step_motor(1, forward_speed);
         } else if (current_dir == -1) {
-            step_motor(-1, slow_speed_us);
+            step_motor(-1, backward_speed);
         } else {
             release_motor();
             vTaskDelay(pdMS_TO_TICKS(10));
